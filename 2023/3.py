@@ -25,7 +25,34 @@ def number(row, col, schematic):
     while end < len(schematic[row]) and schematic[row][end].isnumeric():
         end += 1
     logger.info(f'number {row=} {col=} {start=} {end=} {schematic[row][start:end]=}')
-    return start, end, int(schematic[row][start:end])
+    return start, int(schematic[row][start:end])
+
+
+def part_two(fname):
+    ans = 0
+    schematic = []
+    with open(fname) as fp:
+        for line in fp.readlines():
+            schematic.append(line.strip())
+    for row in range(len(schematic)):
+        for col in range(len(schematic[row])):
+            if schematic[row][col] != '*':
+                continue
+            part_numbers = []
+            included = set()
+            for i, j in neighbors(row, col, schematic):
+                if schematic[i][j].isnumeric():
+                    s, n = number(i, j, schematic)
+                    if (i, s) in included:
+                        continue
+                    part_numbers.append(n)
+                    included.add((i, s))
+                    logger.debug(f'{part_numbers=}')
+            if len(part_numbers) == 2:
+                logger.debug(f'{part_numbers=}')
+                gear_ratio = part_numbers[0] * part_numbers[1]
+                ans += gear_ratio
+    return ans
 
 
 def part_one(fname):
@@ -42,12 +69,12 @@ def part_one(fname):
                 continue
             for i, j in neighbors(row, col, schematic):
                 if schematic[i][j].isnumeric():
-                    n = number(i, j, schematic)
-                    if n not in included:
-                        ans += n[2]
-                        included.add(n)
+                    s, n = number(i, j, schematic)
+                    if (i, s) not in included:
+                        ans += n
+                        included.add((i, s))
     return ans
 
 
 if __name__ == '__main__':
-    logger.info(part_one(sys.argv[1]))
+    logger.info(part_two(sys.argv[1]))
