@@ -17,7 +17,7 @@ def init_map(fp):
 
 
 def part_one(fname):
-    ans = 0
+    ans = float('inf')
     with open(fname) as fp:
         line = fp.readline().strip()
         seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric()]
@@ -47,21 +47,21 @@ def part_one(fname):
 
     for seed in seeds:
         logger.debug(f'{seed=}')
-        soil = s2s[seed]
+        soil = s2s.get(seed, seed)
         logger.debug(f'{soil=}')
-        fertilizer = s2f[soil]
+        fertilizer = s2f.get(soil, soil)
         logger.debug(f'{fertilizer=}')
-        water = f2w[fertilizer]
+        water = f2w.get(fertilizer, fertilizer)
         logger.debug(f'{water=}')
-        light = w2l[water]
+        light = w2l.get(water, water)
         logger.debug(f'{light=}')
-        temperature = l2t[light]
+        temperature = l2t.get(light, light)
         logger.debug(f'{temperature=}')
-        humidity = t2h[temperature]
+        humidity = t2h.get(temperature, temperature)
         logger.debug(f'{humidity=}')
-        location = h2l[humidity]
+        location = h2l.get(humidity, humidity)
         logger.debug(f'{location=}')
-        ans += location
+        ans = min(ans, location)
     return ans
 
 
