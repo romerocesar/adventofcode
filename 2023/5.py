@@ -5,63 +5,36 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('adventofcode')
 
 
-def init_map(fp):
-    ans = {}
-    while line := fp.readline().strip():
-        if not line:
-            break
-        d, s, r = [int(x) for x in line.strip().split(' ')]
-        for i in range(r):
-            ans[s+i] = d+i
-    return ans
-
-
 def part_one(fname):
     ans = float('inf')
+    all_maps = []
     with open(fname) as fp:
         line = fp.readline().strip()
-        seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric()]
+        seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric() ]
         logger.debug(f'{seeds=}')
         fp.readline()  # skip blank line
-        fp.readline()  # skip seed to soil
-        s2s = init_map(fp)
-        logger.debug(f'{s2s=}')
-        fp.readline()  # skip soil to fertilizer header
-        s2f = init_map(fp)
-        logger.debug(f'{s2f=}')
-        fp.readline()  # skip fertilizer to water header
-        f2w = init_map(fp)
-        logger.debug(f'{f2w=}')
-        fp.readline()  # skip water to light header
-        w2l = init_map(fp)
-        logger.debug(f'{w2l=}')
-        fp.readline()  # skip light to temperature header
-        l2t = init_map(fp)
-        logger.debug(f'{l2t=}')
-        fp.readline()  # skip temperature to humidity header
-        t2h = init_map(fp)
-        logger.debug(f'{t2h=}')
-        fp.readline()  # skip humidity to location header
-        h2l = init_map(fp)
-        logger.debug(f'{h2l=}')
+        for i in range(7):
+            tmap = []
+            fp.readline()  # skip header
+            while line := fp.readline().strip():
+                if not line:
+                    break
+                d, s, r = [int(x) for x in line.strip().split(' ')]
+                tmap.append((d, s, r))
+            all_maps.append(tmap)
+        logger.debug(f'{all_maps=}')
 
     for seed in seeds:
         logger.debug(f'{seed=}')
-        soil = s2s.get(seed, seed)
-        logger.debug(f'{soil=}')
-        fertilizer = s2f.get(soil, soil)
-        logger.debug(f'{fertilizer=}')
-        water = f2w.get(fertilizer, fertilizer)
-        logger.debug(f'{water=}')
-        light = w2l.get(water, water)
-        logger.debug(f'{light=}')
-        temperature = l2t.get(light, light)
-        logger.debug(f'{temperature=}')
-        humidity = t2h.get(temperature, temperature)
-        logger.debug(f'{humidity=}')
-        location = h2l.get(humidity, humidity)
-        logger.debug(f'{location=}')
+        location = seed
+        for m in all_maps:
+            for d, s, r in m:
+                if location in range(s, s+r):
+                    location = d + location - s
+                    break
+        logger.debug(f'{seed=} {location=}')
         ans = min(ans, location)
+
     return ans
 
 
