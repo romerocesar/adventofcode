@@ -10,7 +10,40 @@ def part_one(fname):
     all_maps = []
     with open(fname) as fp:
         line = fp.readline().strip()
-        seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric() ]
+        seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric()]
+        logger.debug(f'{seeds=}')
+        fp.readline()  # skip blank line
+        for i in range(7):
+            tmap = []
+            fp.readline()  # skip header
+            while line := fp.readline().strip():
+                if not line:
+                    break
+                d, s, r = [int(x) for x in line.strip().split(' ')]
+                tmap.append((d, s, r))
+            all_maps.append(tmap)
+        logger.debug(f'{all_maps=}')
+
+    for seed in seeds:
+        logger.debug(f'{seed=}')
+        location = seed
+        for m in all_maps:
+            for d, s, r in m:
+                if location in range(s, s+r):
+                    location = d + location - s
+                    break
+        logger.debug(f'{seed=} {location=}')
+        ans = min(ans, location)
+
+    return ans
+
+
+def part_two(fname):
+    ans = float('inf')
+    all_maps = []
+    with open(fname) as fp:
+        line = fp.readline().strip()
+        seeds = [int(x) for x in line.split(':')[1].split(' ') if x.isnumeric()]
         logger.debug(f'{seeds=}')
         fp.readline()  # skip blank line
         for i in range(7):
