@@ -58,24 +58,27 @@ def part_one(fname):
 
 def joker_hand_type(hand):
     logger.debug(f'{hand=}')
-    counts = Counter(hand['c'])
-    if 'J' in hand['c']:
-        # replace J with the most common card
-        mode = counts.most_common(1)[0][0]
-        logger.debug(f'{mode=}')
-        logger.debug(f'{hand=}')
-        hand['c'] = hand['c'].replace('J', mode)
-        logger.debug(f'{hand=}')
-        counts = Counter(hand['c'])
-
-    logger.debug(f'{counts=}')
+    cards = hand['c']
+    counts = Counter(cards)
     if len(counts) == 1:
         return 7
+
+    if 'J' in cards:
+        # replace J with the most common non J card
+        counts = [c[0] for c in counts.most_common() if c[0] != 'J']
+        mode = counts[0]
+        logger.debug(f'{mode=}')
+        logger.debug(f'{cards=}')
+        cards = cards.replace('J', mode)
+        logger.debug(f'{cards=}')
+        counts = Counter(cards)
+
+    if len(counts) == 1:
+        return 7
+
     a, b = list(sorted(counts.values(), reverse=True))[:2]
     logger.debug(f'{a=} {b=}')
-    if a == 5:
-        return 7
-    elif a == 4:
+    if a == 4:
         return 6
     elif a == 3 and b == 2:
         return 5
@@ -107,9 +110,9 @@ def part_two(fname):
     for hand in hands:
         hand['t'] = joker_hand_type(hand)
 
-    add_rank(hands)
+    joker_add_rank(hands)
 
-    for hand in hands:
+    for hand in sorted(hands, key=lambda x: x['r']):
         logger.debug(f'{hand=}')
         ans += hand['b'] * hand['r']
     return ans
