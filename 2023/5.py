@@ -57,7 +57,9 @@ def part_two(fname):
             all_maps.append(tmap)
         logger.debug(f'{all_maps=}')
 
-    for seed in seeds:
+    pairs = [(seeds[i], seeds[i+1]) for i in range(len(seeds)-1)]
+    all_seeds = (x for x in range(s, s+r) for s, r in pairs)
+    for seed in all_seeds:
         logger.debug(f'{seed=}')
         location = seed
         for m in all_maps:
@@ -71,4 +73,4 @@ def part_two(fname):
     return ans
 
 
-logger.info(part_one(sys.argv[1]))
+logger.info(part_two(sys.argv[1]))
